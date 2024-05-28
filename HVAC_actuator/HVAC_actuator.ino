@@ -9,12 +9,18 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define HVAC_TOPIC "/actuator/HVAC"
+#define HVAC_TOPIC      "/actuator/HVAC"
+#define TOPIC_RESPONSE  "room1/response"
 
 #define TEMP_CONTROL    (1)
 #define HUMI_CONTROL    (2)
 #define AIR_CONTROL     (3)
 #define WARNING_EVENT   (4)
+
+const char* ssid = "Kien";
+const char* password = "abcde123";
+
+const char *mqtt_server = "192.168.1.12";
 
 typedef struct {
     float value;
@@ -32,12 +38,6 @@ typedef struct{
     int event_control;
     float set_point;
 }__attribute__((packed)) HVAC_event_t;
-
-
-const char* ssid = "Kien";
-const char* password = "abcde123";
-
-const char *mqtt_server = "192.168.1.19";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -65,11 +65,12 @@ void mqtt_connection_task(void *arg){
     while(1){
         if(!client.connected()){
             Serial.println("Attemping  MQTT connection!");
-            if(client.connect("HVAC",  "room1/actuator/status", (uint8_t)1, 0, "HVAC disconnected")){
+            if(client.connect("HVAC",  TOPIC_RESPONSE, (uint8_t)1, 1, "HVAC disconnected")){
                 Serial.println("MQTT connected!");
                 sprintf(topic, "room%d%s\0", HVA_controller.room_id, HVAC_TOPIC);
                 // client.setKeepAlive(0);
                 client.subscribe(topic, 1);
+                client.publish(TOPIC_RESPONSE, "HVAC Connected", (boolean)true);
             }
         }
         else
@@ -191,7 +192,7 @@ void setup(){
     msg_queue = xQueueCreate(6, sizeof(HVAC_event_t));
 
     wifi_setup();
-    client.setServer(mqtt_server, 1883);
+    client.setServer(mqtt_server, 1884);
     client.setCallback(callback);
 
     xTaskCreatePinnedToCore(mqtt_connection_task, "mqtt task", 2048, NULL, 3, NULL, 1);
