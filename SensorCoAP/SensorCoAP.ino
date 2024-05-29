@@ -2,24 +2,23 @@
 #include <WiFiUdp.h>
 #include <coap-simple.h>
 
-// Thông tin mạng WiFi
 const char* ssid = "Phuong Huyen";
 const char* password = "123456789";
 
-// Địa chỉ IP của ESP32 gateway
 IPAddress gateway_ip(192, 168, 1, 8); // Thay bằng địa chỉ IP của ESP32 gateway
 const int gateway_port = 7000; // Cổng CoAP
 
-// Pin kết nối cảm biến quang trở
 const int ldrPin = 34;
+const int mq02Pin = 35;
 
-// UDP và CoAP class
 WiFiUDP udp;
 Coap coap(udp);
 
 void setup() {
   Serial.begin(115200);
 
+  pinMode(ldrPin, INPUT);
+  pinMode(mq02Pin, INPUT);
   // Kết nối WiFi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -30,22 +29,21 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
-  // Bắt đầu CoAP client
   coap.start();
 }
 
 void loop() {
-  // Đọc giá trị từ cảm biến quang trở
+  
   int ldrValue = analogRead(ldrPin);
+  int mq02Value = analogRead(mq02Pin);
   Serial.print("LDR Value: ");
   Serial.println(ldrValue);
+  Serial.print("MQ02 Value: ");
+  Serial.println(mq02Value);
 
-  // Chuyển giá trị thành chuỗi
-  String payload = String(ldrValue);
+  String payload = "{ldr: " + String(ldrValue) + ", airquality: " + String(mq02Value) + "}";
   
   // Gửi yêu cầu PUT đến ESP32 gateway
-  coap.put(gateway_ip, gateway_port, "ldr", payload.c_str());
-
-  // Chờ 10 giây trước khi gửi lại
+  coap.put(gateway_ip, gateway_port, "coap", payload.c_str());
   delay(3000);
 }
