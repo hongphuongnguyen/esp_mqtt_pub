@@ -20,7 +20,7 @@
 const char* ssid = "Kien";
 const char* password = "abcde123";
 
-const char *mqtt_server = "192.168.1.12";
+const char *mqtt_server = "192.168.1.5";
 
 typedef struct {
     float value;
@@ -55,6 +55,7 @@ HVAC_event_t msg_control = {
 // set the LCD number of columns and rows
 int lcdColumns = 16;
 int lcdRows = 2;
+int check = 1;
 
 // set LCD address, number of columns and rows
 // if you don't know your display address, run an I2C scanner sketch
@@ -112,7 +113,7 @@ void callback(char *topic, byte* message, unsigned int length){
     Serial.println((char*)messageTemp);
     pchar = strtok(messageTemp, ":\n");
     while(pchar != NULL){
-        if(!strcmp(pchar, "temp")){
+        if(!strcmp(pchar, "\"temp\"")){
             msg_control.event_control = TEMP_CONTROL;
             // Serial.println(msg_control.event_control);
             pchar = strtok(NULL, ":\n");
@@ -121,7 +122,7 @@ void callback(char *topic, byte* message, unsigned int length){
             xQueueSend(msg_queue,(void *) &msg_control, 0);
             continue;
         }
-        else if(!strcmp(pchar, "humi")){
+        else if(!strcmp(pchar, "\"humidity\"")){
             msg_control.event_control = HUMI_CONTROL;
             // Serial.println(msg_control.event_control);
             pchar = strtok(NULL, ":\n");
@@ -130,7 +131,7 @@ void callback(char *topic, byte* message, unsigned int length){
             xQueueSend(msg_queue,(void *) &msg_control, 0);
             continue;
         }
-        else if(!strcmp(pchar, "air")){
+        else if(!strcmp(pchar, "\"air\"")){
             msg_control.event_control = AIR_CONTROL;
             // Serial.println(msg_control.event_control);
             pchar = strtok(NULL, ":\n");
@@ -149,14 +150,17 @@ void LCD_display_task(void *arg){
     char hvac0[20];
     char hvac1[20];
     while(1){
-        lcd.clear();
-        sprintf(hvac1, "A: %.0f\0", HVA_controller.air.value);
-        sprintf(hvac0, "T: %.1f H: %.0f\0", HVA_controller.temp.value, HVA_controller.humi.value);
-        lcd.setCursor(0,0);
-        lcd.print(hvac0);
-        lcd.setCursor(0,1);
-        lcd.print(hvac1);
-        vTaskDelay(2000/portTICK_PERIOD_MS);
+        if(check){
+            lcd.clear();
+            sprintf(hvac1, "A: %.0f\0", HVA_controller.air.value);
+            sprintf(hvac0, "T: %.1f H: %.0f\0", HVA_controller.temp.value, HVA_controller.humi.value);
+            lcd.setCursor(0,0);
+            lcd.print(hvac0);
+            lcd.setCursor(0,1);
+            lcd.print(hvac1);
+            check = 0;
+        }
+        vTaskDelay(200/portTICK_PERIOD_MS);
     }
     
 }
@@ -164,6 +168,7 @@ void LCD_display_task(void *arg){
 void HVAC_control_task(void *arg){
     while(1){
         if(xQueueReceive(msg_queue, (void *)&msg_control, 0)){
+            check = 1;
             switch (msg_control.event_control)
             {
             case TEMP_CONTROL:
