@@ -71,6 +71,7 @@ void mqtt_connection_task(void *arg){
                 sprintf(topic, "room%d%s\0", HVA_controller.room_id, HVAC_TOPIC);
                 // client.setKeepAlive(0);
                 client.subscribe(topic, 1);
+                Serial.println("Subscribed to " + String(topic));
                 client.publish(TOPIC_RESPONSE, "HVAC Connected", (boolean)true);
             }
         }
