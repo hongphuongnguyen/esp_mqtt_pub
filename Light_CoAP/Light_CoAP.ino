@@ -1,13 +1,21 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <coap-simple.h>
+#include "IPAddress.h"
 
-#define SSID        "Kien"
+
+#define SSID        "cien"
 #define PASSWORD    "abcde123"
 #define LIGHT_PIN   2
 
 #define HOST  "192.168.137.1"
 #define PORT        5683
+
+IPAddress local_IP(192,168,137,100);
+IPAddress gateway(192,168,137, 1);
+IPAddress subnet(255,255,255,1);
+IPAddress primaryDNS(8,8,8,8);
+IPAddress secondaryDNS(4,4,4,4);
 
 WiFiUDP udp;
 Coap coap(udp);
@@ -54,6 +62,8 @@ void light_control( void *args){
 
 void setup(){
     Serial.begin(115200);
+
+    WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS);
     WiFi.begin(SSID, PASSWORD);
     while(WiFi.status() != WL_CONNECTED){
         delay(500);

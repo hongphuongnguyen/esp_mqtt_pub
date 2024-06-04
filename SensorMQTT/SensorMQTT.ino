@@ -2,9 +2,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-#define mqtt_server "192.168.1.6"
-#define ssid        "Phuong Huyen" 
-#define pass        "123456789"
+#define mqtt_server "192.168.137.1"
+#define ssid        "cien" 
+#define pass        "abcde123"
 
 #define iot_topic    "sensor/DHT11"
 

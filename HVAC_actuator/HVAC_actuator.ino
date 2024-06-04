@@ -17,10 +17,10 @@
 #define AIR_CONTROL     (3)
 #define WARNING_EVENT   (4)
 
-const char* ssid = "Kien";
+const char* ssid = "cien";
 const char* password = "abcde123";
 
-const char *mqtt_server = "192.168.1.5";
+const char *mqtt_server = "192.168.137.1";
 
 typedef struct {
     float value;

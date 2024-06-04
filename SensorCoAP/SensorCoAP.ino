@@ -2,14 +2,15 @@
 #include <WiFiUdp.h>
 #include <coap-simple.h>
 
-const char* ssid = "Phuong Huyen";
-const char* password = "123456789";
+const char* ssid = "cien";
+const char* password = "abcde123";
 
-IPAddress gateway_ip(192, 168, 1, 8); // Thay bằng địa chỉ IP của ESP32 gateway
-const int gateway_port = 7000; // Cổng CoAP
+IPAddress gateway_ip(192, 168, 137, 1); // Thay bằng địa chỉ IP của ESP32 gateway
+const int gateway_port = 5683; // Cổng CoAP
 
 const int ldrPin = 34;
 const int mq02Pin = 35;
+int c = 10;
 
 WiFiUDP udp;
 Coap coap(udp);
@@ -43,7 +44,10 @@ void loop() {
 
   String payload = "{ldr: " + String(ldrValue) + ", airquality: " + String(mq02Value) + "}";
   
+  
+  c++
   // Gửi yêu cầu PUT đến ESP32 gateway
-  coap.put(gateway_ip, gateway_port, "coap", payload.c_str());
+  // coap.put(gateway_ip, gateway_port, "coap", payload.c_str());
+  coap.put(gateway_ip, gateway_port, "coap", String(c).c_str());
   delay(3000);
 }
