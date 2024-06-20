@@ -8,7 +8,7 @@
 
 #define iot_topic    "sensor/DHT11"
 
-#define DHTPIN 2
+#define DHTPIN 15
 DHT11 dht(DHTPIN);
 
 WiFiClient espClient;
@@ -21,7 +21,7 @@ void setup() {
   Serial.begin(115200);
   setup_wifi();
 
-  client.setServer(mqtt_server, 1885);
+  client.setServer(mqtt_server, 1884);
 }
 
 void loop() {

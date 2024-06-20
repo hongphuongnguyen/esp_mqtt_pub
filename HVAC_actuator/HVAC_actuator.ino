@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <nvs_flash.h>
 
 #define HVAC_TOPIC      "/actuator/HVAC"
 #define TOPIC_RESPONSE  "room1/response"
@@ -150,6 +151,10 @@ void callback(char *topic, byte* message, unsigned int length){
 void LCD_display_task(void *arg){
     char hvac0[20];
     char hvac1[20];
+    lcd.init();
+    // turn on LCD backlight                      
+    lcd.backlight();
+    delay(100);
     while(1){
         if(check){
             lcd.clear();
@@ -193,8 +198,10 @@ void setup(){
     Serial.begin(115200);
     // initialize LCD
     lcd.init();
-    // turn on LCD backlight                      
-    lcd.backlight();
+    // // turn on LCD backlight                      
+    // lcd.backlight();
+    // delay(100);
+    lcd.clear();
     msg_queue = xQueueCreate(6, sizeof(HVAC_event_t));
 
     wifi_setup();

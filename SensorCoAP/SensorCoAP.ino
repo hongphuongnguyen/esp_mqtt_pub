@@ -5,7 +5,7 @@
 const char* ssid = "cien";
 const char* password = "abcde123";
 
-IPAddress gateway_ip(192, 168, 137, 1); // Thay bằng địa chỉ IP của ESP32 gateway
+IPAddress gateway_ip(192, 168, 137, 30); // Thay bằng địa chỉ IP của ESP32 gateway
 const int gateway_port = 5683; // Cổng CoAP
 
 const int ldrPin = 34;
@@ -45,9 +45,10 @@ void loop() {
   String payload = "{ldr: " + String(ldrValue) + ", airquality: " + String(mq02Value) + "}";
   
   
-  c++
+  c++;
   // Gửi yêu cầu PUT đến ESP32 gateway
   // coap.put(gateway_ip, gateway_port, "coap", payload.c_str());
   coap.put(gateway_ip, gateway_port, "coap", String(c).c_str());
+  coap.loop();
   delay(3000);
 }
